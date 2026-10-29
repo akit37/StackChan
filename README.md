@@ -1,5 +1,32 @@
 # StackChan Open-Source
 
+> [!NOTE]
+> **Fork Information**
+> This repository is a customized fork of [m5stack/StackChan](https://github.com/m5stack/StackChan).
+> 
+> **Custom Enhancements:**
+> - **Timer Application (`AppTimer`)**: Added a built-in countdown timer application with a custom launcher icon.
+> - **Refined Wi-Fi Setup Flow**: Improved the connectivity worker to streamline Wi-Fi configuration directly via SoftAP and web/QR portal without requiring the mobile app login.
+
+---
+
+## 🚀 Features Added in This Fork
+
+### 1. Timer Application
+- **Overview**: A native countdown timer app integrated into the StackChan launcher.
+- **Assets**: Includes dedicated timer icon assets (`icon_timer.bin`).
+- **How to use**: Tap the timer icon from the launcher app menu to set and start countdowns.
+
+### 2. Refined Wi-Fi Setup
+- **Overview**: Overhauled the `WifiSetupWorker` setup flow.
+- **Key Improvements**:
+  - Automatically launches StackChan's configuration SoftAP (`StackChan-XXXX`).
+  - Displays QR code and SSID for direct device connection.
+  - Detects client device connection status with visual feedback.
+  - Allows quick and direct network configuration.
+
+---
+
 <img src="https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1205/K151_stack_chan_main_pictures_01.webp" width="60%">
 
 Here are StackChan related open-source resources, including source code of the StackChan firmware, remote controller firmware, mobile app (iOS and Android), and server. 
