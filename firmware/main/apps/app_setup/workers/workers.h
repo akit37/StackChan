@@ -95,64 +95,59 @@ public:
 private:
     enum class State {
         None,
-        AppDownload,
-        WaitAppConnection,
-        AppConnected,
+        ConfigAp,
+        DeviceConnected,
         Done,
     };
 
-    State _state      = State::AppDownload;
+    State _state      = State::ConfigAp;
     State _last_state = State::None;
 
     uint32_t _last_tick = 0;
     bool _is_first_in   = false;
+    bool _sta_connected = false;
 
-    AppConfigEvent _last_app_config_event = AppConfigEvent::None;
-    int _app_config_signal_id             = -1;
-
-    struct StateAppDownloadData {
+    struct StateConfigApData {
         std::unique_ptr<uitk::lvgl_cpp::Container> panel;
         std::unique_ptr<uitk::lvgl_cpp::Label> title;
-        std::unique_ptr<uitk::lvgl_cpp::Qrcode> qrcode_ios;
-        std::unique_ptr<uitk::lvgl_cpp::Qrcode> qrcode_android;
-        std::unique_ptr<uitk::lvgl_cpp::Label> label_ios;
-        std::unique_ptr<uitk::lvgl_cpp::Label> label_android;
-        std::unique_ptr<uitk::lvgl_cpp::Button> btn_next;
-        std::unique_ptr<uitk::lvgl_cpp::Button> btn_quit;
-        std::unique_ptr<uitk::lvgl_cpp::Label> info;
-        bool next_clicked = false;
-        bool quit_clicked = false;
+        std::unique_ptr<uitk::lvgl_cpp::Label> subtitle;
+        std::unique_ptr<uitk::lvgl_cpp::Label> current_wifi_label;
+        std::unique_ptr<uitk::lvgl_cpp::Qrcode> qrcode;
+        std::unique_ptr<uitk::lvgl_cpp::Label> ssid_label;
+        std::unique_ptr<uitk::lvgl_cpp::Label> tip_label;
+        std::unique_ptr<uitk::lvgl_cpp::Button> btn_back;
+        bool back_clicked = false;
 
         void reset()
         {
             panel.reset();
             title.reset();
-            qrcode_ios.reset();
-            qrcode_android.reset();
-            label_ios.reset();
-            label_android.reset();
-            btn_next.reset();
-            btn_quit.reset();
-            info.reset();
-            next_clicked = false;
-            quit_clicked = false;
+            subtitle.reset();
+            current_wifi_label.reset();
+            qrcode.reset();
+            ssid_label.reset();
+            tip_label.reset();
+            btn_back.reset();
+            back_clicked = false;
         }
     };
-    StateAppDownloadData _state_app_download_data;
+    StateConfigApData _state_config_ap_data;
 
-    struct StateWaitAppConnectionData {
-        std::unique_ptr<uitk::lvgl_cpp::Container> panel;
-        std::unique_ptr<uitk::lvgl_cpp::Button> btn_id;
-        std::unique_ptr<uitk::lvgl_cpp::Label> info;
+    struct StateDeviceConnectedData {
+        std::unique_ptr<uitk::lvgl_cpp::Label> title;
+        std::unique_ptr<uitk::lvgl_cpp::Label> subtitle;
+        std::unique_ptr<uitk::lvgl_cpp::Spinner> spinner;
+        std::unique_ptr<uitk::lvgl_cpp::Label> tip;
 
         void reset()
         {
-            panel.reset();
-            btn_id.reset();
-            info.reset();
+            title.reset();
+            subtitle.reset();
+            spinner.reset();
+            tip.reset();
         }
     };
-    StateWaitAppConnectionData _state_wait_app_connection_data;
+    StateDeviceConnectedData _state_device_connected_data;
 
     struct StateDoneData {
         int reboot_count = 0;
