@@ -42,6 +42,7 @@ void AppTimer::onOpen()
     _selected_minutes        = 5;
     _total_seconds           = 0;
     _remaining_seconds       = 0;
+    _alert_50_percent_played = false;
     _alert_30_percent_played = false;
     _alert_10_percent_played = false;
     _servo_action            = ServoAction::None;
@@ -195,6 +196,7 @@ void AppTimer::start_timer()
     _state                   = State::Running;
     _total_seconds           = _selected_minutes * 60;
     _remaining_seconds       = _total_seconds;
+    _alert_50_percent_played = false;
     _alert_30_percent_played = false;
     _alert_10_percent_played = false;
     _next_look_around_ms     = 0;
@@ -317,6 +319,12 @@ void AppTimer::handle_timer_msg(const TimerMsg& msg)
 
     float ratio = (float)msg.remainingSeconds / (float)msg.totalSeconds;
 
+    // 残り 50% 到達判定 (ベルなしで1回首振り)
+    if (ratio <= 0.50f && !_alert_50_percent_played) {
+        _alert_50_percent_played = true;
+        trigger_alert_50();
+    }
+
     // 残り 30% 到達判定 (黄に色変化 & 1鈴 + 1回首振り)
     if (ratio <= 0.30f && !_alert_30_percent_played) {
         _alert_30_percent_played = true;
@@ -430,6 +438,18 @@ void AppTimer::execute_bell_sound(BellPattern pattern)
     audio_codec->EnableOutput(false);
 }
 
+void AppTimer::trigger_alert_50()
+{
+    mclog::tagInfo(_tag, "alert 50% (1 head turn, no bell)");
+
+    if (_servo_action == ServoAction::None) {
+        _servo_action          = ServoAction::Alert50Turn;
+        _servo_action_start_ms = GetHAL().millis();
+        // 軽やかに片側へ首を振って戻る (1回首振り)
+        GetStackChan().motion().lookAtNormalized(0.25f, 0.0f, 650);
+    }
+}
+
 void AppTimer::trigger_alert_30()
 {
     mclog::tagInfo(_tag, "alert 30% (1 bell & 1 head turn)");
@@ -497,6 +517,20 @@ void AppTimer::update_servo_animation()
     uint32_t elapsed = GetHAL().millis() - _servo_action_start_ms;
 
     switch (_servo_action) {
+        // --- 残り50%到達時の1回首振り ---
+        case ServoAction::Alert50Turn:
+            if (elapsed >= 650) {
+                _servo_action          = ServoAction::Alert50Home;
+                _servo_action_start_ms = GetHAL().millis();
+                GetStackChan().motion().goHome(600);
+            }
+            break;
+        case ServoAction::Alert50Home:
+            if (elapsed >= 600) {
+                _servo_action = ServoAction::None;
+            }
+            break;
+
         // --- 残り30%の色変化時の1回首振り ---
         case ServoAction::Alert30Turn:
             if (elapsed >= 650) {
