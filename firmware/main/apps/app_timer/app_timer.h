@@ -44,6 +44,9 @@ private:
 
     enum class ServoAction {
         None,
+        // 残り50%到達時の1回首振り
+        Alert50Turn,
+        Alert50Home,
         // 残り30%の色変化時の1回首振り
         Alert30Turn,
         Alert30Home,
@@ -64,6 +67,7 @@ private:
     int _selected_minutes = 5;       // 01〜99 分 (初期値5分)
     int _total_seconds = 0;
     int _remaining_seconds = 0;
+    bool _alert_50_percent_played = false;
     bool _alert_30_percent_played = false;
     bool _alert_10_percent_played = false;
     uint32_t _next_look_around_ms = 0; // 残り10%中の定期キョロキョロ用
@@ -122,6 +126,7 @@ private:
     void handle_timer_msg(const TimerMsg& msg);
     void update_arc_and_display(int remaining, int total);
     void update_avatar_face();
+    void trigger_alert_50();
     void trigger_alert_30();
     void trigger_alert_10();
     void trigger_look_around();
