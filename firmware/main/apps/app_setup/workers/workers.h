@@ -391,7 +391,7 @@ private:
  */
 class FactoryResetWorker : public WorkerBase {
 public:
-    FactoryResetWorker(std::function<void()> beforeResetAction = {});
+    FactoryResetWorker(std::function<bool()> beforeResetAction = {});
     ~FactoryResetWorker();
     void update() override;
 
@@ -405,7 +405,7 @@ private:
     int _confirm_count = 0;
     bool _cancel_flag  = false;
     bool _confirm_flag = false;
-    std::function<void()> _before_reset_action;
+    std::function<bool()> _before_reset_action;
 
     void update_ui();
 };
